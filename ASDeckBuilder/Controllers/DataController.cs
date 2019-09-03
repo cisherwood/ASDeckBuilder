@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using ASDeckBuilder.Data;
 using ASDeckBuilder.Models;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +17,12 @@ namespace ASDeckBuilder.Controllers
     public class DataController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public DataController(ApplicationDbContext context)
+        public DataController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -36,83 +41,168 @@ namespace ASDeckBuilder.Controllers
 
         public async Task<IActionResult> GetCardDetail()
         {
+
+
             HttpClient client = new HttpClient();
 
             // get all cards from database
-            var cards = _context.Cards;
+            var cards = _context.Cards.ToList();
 
 
-
+            // Loop through all cards in database
             foreach (Card c in cards)
             {
-                // Get card url
-                string cardUrl = c.Url;
-
-                using (var response = await client.GetAsync(cardUrl))
+                try
                 {
-                    using (var content = response.Content)
+                    // Get card url
+                    string cardUrl = c.Url;
+
+                    // Access argent saga website
+                    using (var response = await client.GetAsync(cardUrl))
                     {
-                        // read aregent sage website card detail page in non-blocking way
-                        var result = await content.ReadAsStringAsync();
-                        var document = new HtmlDocument();
-                        document.LoadHtml(result);
-
-                        // Get current card information 
-                        Card card = _context.Cards.Where(x => x.Name == c.Name).FirstOrDefault();
-
-                        // Get card categories from argent saaga website
-                        var cardCategories = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[4]/div/div/span[1]/span[2]");
-
-                        // Loop through each categories
-                        foreach(HtmlNode node in cardCategories)
+                        using (var content = response.Content)
                         {
-                            // Category name
-                            string nodeCategory = node.InnerHtml;
+                            // read aregent sage website card detail page in non-blocking way
+                            var result = await content.ReadAsStringAsync();
+                            var document = new HtmlDocument();
+                            document.LoadHtml(result);
 
-                            // Ensure category exists
-                            if (_context.Categories.Any(o => o.Name == nodeCategory))
-                            {
-                                // if  category already exists, do nothing
-                            }
-                            else
-                            {
-                                // Create category entry
-                                Categories category = new Categories();
-                                category.Name = nodeCategory;
+                            // Get current card information 
+                            Card card = _context.Cards.Where(x => x.Name == c.Name).FirstOrDefault();
 
-                                // add category to database
-                                _context.Add(category);
+
+                            // *** Card Categories ***
+
+                            // Get card categories from argent saaga website
+                            var cardCategories = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[4]/div/div/span[1]/span[2]");
+                            // Select category text
+                            string nodes = cardCategories[0].InnerText;
+                            // Clean Category
+                            char[] charsToTrim = { ' ' };
+                            // Remove whitespace
+                            string[] nodeList = nodes.Split(",").Select(x => x.Trim(charsToTrim)).ToArray();
+
+
+                            // Loop through each categories
+                            foreach (string nodeCategory in nodeList)
+                            {
+                                // Ensure category exists
+                                if (_context.Categories.Any(o => o.Name == nodeCategory))
+                                {
+                                    // if  category already exists, do nothing
+                                }
+                                else
+                                {
+                                    // Create category entry
+                                    Categories category = new Categories();
+                                    category.Name = nodeCategory;
+
+                                    // add category to database
+                                    _context.Add(category);
+                                }
+
+                                await _context.SaveChangesAsync();
+
+                                // Check if card category entry exists
+                                if (_context.CardCategories.Any(o => o.Categories.Name == nodeCategory && o.Card.Name == c.Name))
+                                {
+                                    // Card Category entry exists, do nothing
+                                }
+                                else
+                                {
+                                    CardCategories cardCategory = new CardCategories();
+                                    cardCategory.CardId = c.CardId;
+                                    cardCategory.CategoryId = _context.Categories.Where(x => x.Name == nodeCategory).FirstOrDefault().CategoryId;
+
+                                    // add card category to database
+                                    _context.Add(cardCategory);
+
+                                }
+
                                 await _context.SaveChangesAsync();
                             }
 
-                            // Check if card category entry exists
-                            if(_context.CardCategories.Any(o=>o.Categories.Name == nodeCategory && o.Card.Name == c.Name))
+
+                            // *** Card Tags ***
+
+
+                            // Get card tag from argent saaga website
+                            var cardTags = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[4]/div/div/span[2]/span[2]");
+                            // Select category text
+                            string tagNodes = cardTags[0].InnerText;
+                            // Remove whitespace
+                            string[] tagNodeList = tagNodes.Split(",").Select(x => x.Trim(charsToTrim)).ToArray();
+
+                            // Loop through all tags from agrent saga website for this card
+                            foreach (string nodeTag in tagNodeList)
                             {
-                                // Card Category entry exists, do nothing
-                            }
-                            else
-                            {
-                                CardCategories cardCategory = new CardCategories();
-                                cardCategory.CardId = c.CardId;
-                                cardCategory.CategoryId = _context.Categories.Where(x => x.Name == nodeCategory).FirstOrDefault().CategoryId;
-                               
-                                // add card category to database
-                                _context.Add(cardCategory);
+                                // Ensure tag exists
+                                if (_context.Tags.Any(o => o.Name == nodeTag))
+                                {
+                                    // if  tag already exists, do nothing
+                                }
+                                else
+                                {
+                                    // Create tag entry
+                                    Tags tag = new Tags();
+                                    tag.Name = nodeTag;
+
+                                    // add tag to database
+                                    _context.Add(tag);
+                                }
+
                                 await _context.SaveChangesAsync();
 
+                                // Check if card tag entry exists
+                                if (_context.CardTags.Any(o => o.Tag.Name == nodeTag && o.Card.Name == c.Name))
+                                {
+                                    // Card tag entry exists, do nothing
+                                }
+                                else
+                                {
+                                    CardTags cardTag = new CardTags();
+                                    cardTag.CardId = c.CardId;
+                                    cardTag.TagId = _context.Tags.Where(x => x.Name == nodeTag).FirstOrDefault().TagId;
+
+                                    // add card category to database
+                                    _context.Add(cardTag);
+
+                                }
+
+                                await _context.SaveChangesAsync();
                             }
+
+
+                            // *** Card Image ***
+                            var cardImage = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[1]/div/div/div[2]/div/div/figure/div/a/img").FirstOrDefault();
+                            // Get card img link
+                            var src = cardImage.Attributes["src"].Value;
+                            // Create file location
+                            string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
+
+                            var wc = new System.Net.WebClient();
+                            wc.DownloadFile(src, downloadLocation);
+
+                            Console.WriteLine("");
+
+
+                            
+
 
                         }
-
-
-
                     }
                 }
+                catch
+                {
+
+                }
+                
 
 
             }
 
 
+            await _context.SaveChangesAsync();
 
 
             return View();
@@ -120,6 +210,30 @@ namespace ASDeckBuilder.Controllers
 
 
         }
+
+        public async Task<IActionResult> FixCardNames()
+        {
+            IList<Card> cards = _context.Cards.ToList();
+
+            foreach(Card c in cards)
+            {
+                StringWriter stringWriter = new StringWriter();
+                string newName;
+
+                HttpUtility.HtmlDecode(c.Name, stringWriter);
+                newName = stringWriter.ToString();
+
+                c.Name = newName;
+                _context.Update(c);
+
+                await _context.SaveChangesAsync();
+            }
+
+
+            return View();
+
+        }
+
         public async Task<IActionResult> GetCardNames()
         {
 
