@@ -18,6 +18,8 @@ namespace ASDeckBuilder.Data
         public DbSet<CardTags> CardTags { get; set; }
         public DbSet<Categories> Categories { get; set; }
         public DbSet<Tags> Tags { get; set; }
+        public DbSet<Decks> Decks { get; set; }
+
 
 
     }

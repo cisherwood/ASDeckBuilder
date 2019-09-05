@@ -28,7 +28,7 @@ namespace ASDeckBuilder.Pages
         }
 
 
-        public IActionResult OnPost(string id)
+        public IActionResult OnPost([FromBody]string id)
         {
             int cardId = Convert.ToInt32(id);
 
