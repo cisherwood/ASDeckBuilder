@@ -1,0 +1,14 @@
+﻿.cardImage{
+    max-height:100%;
+    max-width:100%;
+}
+
+#cardsBody{
+    padding: 0px;
+    max-height: 20em;
+    overflow: scroll;
+}
+
+#cardDetails{
+    min-height: 100px;
+}

@@ -43,6 +43,9 @@ namespace ASDeckBuilder
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            // Allows AJAX Requests
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
    

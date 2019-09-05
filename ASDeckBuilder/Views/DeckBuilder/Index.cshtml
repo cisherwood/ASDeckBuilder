@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@section CSS{
+    <link rel="stylesheet" href="~/css/DeckBuilder.css" />
+
+}
+
+<div class="text-center">
+    <h1 class="display-4">Deck Builder</h1>
+</div>
+
+
+<div class="row">
+    <!-- Deck builder header for champion / spirit / graphs / deck select -->
+
+</div>
+<div class="row">
+    <div class="col col-12 col-sm-12 col-md-8">
+        <div id="cardSearch">
+
+        </div>
+    </div>
+    <div class="col col-12 col-sm-12 col-md-4">
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: '/cardsearch', // <-- Where should this point?
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "html"
+        }).done(function (data) {
+            $('#cardSearch').replaceWith(data);
+        })
+
+    });
+
+
+
+
+</script>
