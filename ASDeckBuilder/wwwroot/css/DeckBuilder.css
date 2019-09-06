@@ -13,3 +13,22 @@
     min-height: 100px;
 }
 
+.cardDetailsImage{
+    max-height: 15em;
+}
+
+
+.cardListRow > td{
+    padding: 7px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.cardListRow > .icon-shard {
+    padding: 0px;
+    padding-top: 3px;
+}
+
+.icon-shard > img {
+    max-height: 2em;
+}
