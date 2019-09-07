@@ -169,26 +169,74 @@ namespace ASDeckBuilder.Controllers
 
                                 }
 
-                                await _context.SaveChangesAsync();
+
+
+                                // *** Card Effects ***
+
+                                // Get card tag from argent saaga website
+                                var cardEffects = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[4]/div/div/span[2]/span[2]");
+                                // Select category text
+                                string effectNodes = cardTags[0].InnerText;
+                                // Remove whitespace
+                                string[] effectNodeList = tagNodes.Split(",").Select(x => x.Trim(charsToTrim)).ToArray();
+
+                                // Loop through all tags from agrent saga website for this card
+                                foreach (string effectNode in effectNodeList)
+                                {
+                                    // Ensure tag exists
+                                    if (_context.Tags.Any(o => o.Name == nodeTag))
+                                    {
+                                        // if  tag already exists, do nothing
+                                    }
+                                    else
+                                    {
+                                        // Create tag entry
+                                        Tags tag = new Tags();
+                                        tag.Name = nodeTag;
+
+                                        // add tag to database
+                                        _context.Add(tag);
+                                    }
+
+                                    await _context.SaveChangesAsync();
+
+                                    // Check if card tag entry exists
+                                    if (_context.CardTags.Any(o => o.Tag.Name == nodeTag && o.Card.Name == c.Name))
+                                    {
+                                        // Card tag entry exists, do nothing
+                                    }
+                                    else
+                                    {
+                                        CardTags cardTag = new CardTags();
+                                        cardTag.CardId = c.CardId;
+                                        cardTag.TagId = _context.Tags.Where(x => x.Name == nodeTag).FirstOrDefault().TagId;
+
+                                        // add card category to database
+                                        _context.Add(cardTag);
+
+                                    }
+
+                                    await _context.SaveChangesAsync();
+                                }
+
+
+                                // *** Card Image ***
+                                var cardImage = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[1]/div/div/div[2]/div/div/figure/div/a/img").FirstOrDefault();
+                                // Get card img link
+                                var src = cardImage.Attributes["src"].Value;
+                                // Create file location
+                                string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
+
+                                var wc = new System.Net.WebClient();
+                                wc.DownloadFile(src, downloadLocation);
+
+                                Console.WriteLine("");
+
+
+
+
+
                             }
-
-
-                            // *** Card Image ***
-                            var cardImage = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[1]/div/div/div[2]/div/div/figure/div/a/img").FirstOrDefault();
-                            // Get card img link
-                            var src = cardImage.Attributes["src"].Value;
-                            // Create file location
-                            string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
-
-                            var wc = new System.Net.WebClient();
-                            wc.DownloadFile(src, downloadLocation);
-
-                            Console.WriteLine("");
-
-
-                            
-
-
                         }
                     }
                 }
