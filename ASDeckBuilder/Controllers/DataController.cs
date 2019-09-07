@@ -227,10 +227,20 @@ namespace ASDeckBuilder.Controllers
                                 // Create file location
                                 string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
 
+                         
+                            // Check if file does not exist
+                            if (!System.IO.File.Exists(downloadLocation))
+                            {
                                 var wc = new System.Net.WebClient();
                                 wc.DownloadFile(src, downloadLocation);
+                            }
+                            else
+                            {
 
-                                Console.WriteLine("");
+
+                            }
+
+
 
 
 
