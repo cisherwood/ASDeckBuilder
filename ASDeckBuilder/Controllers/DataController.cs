@@ -223,8 +223,17 @@ namespace ASDeckBuilder.Controllers
 
                                         // add card category to database
                                         _context.Add(cardEffect);
+                                        try
+                                        {
+                                            await _context.SaveChangesAsync();
 
-                                        await _context.SaveChangesAsync();
+                                        }
+                                        catch
+                                        {
+                                            _context.Remove(cardEffect);
+
+                                        }
+
 
 
                                     }
@@ -277,7 +286,6 @@ namespace ASDeckBuilder.Controllers
                 }
                 catch(Exception e)
                 {
-
                 }
                 
 
@@ -306,10 +314,46 @@ namespace ASDeckBuilder.Controllers
                 HttpUtility.HtmlDecode(c.Name, stringWriter);
                 newName = stringWriter.ToString();
 
+
                 c.Name = newName;
                 _context.Update(c);
 
                 await _context.SaveChangesAsync();
+            }
+
+
+            return View();
+
+        }
+
+        public async Task<IActionResult> FixCardText()
+        {
+            IList<Card> cards = _context.Cards.ToList();
+
+
+            foreach (Card c in cards)
+            {
+                try
+                {
+                    StringWriter stringWriter = new StringWriter();
+                    string newText;
+
+                    CardEffects cardEffects = _context.CardEffects.Where(x => x.CardId == c.CardId).FirstOrDefault();
+
+                    HttpUtility.HtmlDecode(cardEffects.Text, stringWriter);
+                    newText = stringWriter.ToString();
+
+
+                    cardEffects.Text = newText;
+                    _context.Update(cardEffects);
+
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+
+                }
+
             }
 
 

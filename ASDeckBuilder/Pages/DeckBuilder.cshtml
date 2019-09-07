@@ -14,11 +14,34 @@
 
 </div>
 <div class="row">
-    <div class="col col-12 col-sm-12 col-md-8">
+    <div class="col col-12 col-sm-12 col-md-12 col-lg-8">
         <div id="cardSearch">
             <div class="card text-center">
                 <div class="card-header bg-dark">
-                    <h5 class="text-light">Card Filters</h5>
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-8 col-sm-8 col-md-6 col-lg-6 col-xl-5">
+                                <div class="btn-group flex-wrap" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-secondary icon-shard active"><img src="/img/icons/icon-shard-argent.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-light.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-air.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-water.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-fire.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-dark.svg"></button>
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm">
+                                <input class="form-control-sm" />
+                                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
                 </div>
                 <div id="cardsBody" class="card-body border-0">
                     <div class="row no-gutters">
@@ -59,9 +82,39 @@
 
         </div>
     </div>
-    <div class="col col-12 col-sm-12 col-md-4">
+    <div class="col col-12 col-sm-12 col-md-12 col-lg-4">
         <div id="deckList">
-                Deck list
+            <div class="card text-center">
+                <div class="card-header bg-dark btn-group flex-wrap">
+                    <button type="button" class="btn btn-secondary">Heros</button>
+                    <button type="button" class="btn btn-secondary">Deck</button>
+                    <button type="button" class="btn btn-secondary">Towers</button>
+                    <button type="button" class="btn btn-secondary">Shards</button>
+                </div>
+                <div id="deckBody" class="deck-body border-0">
+                    <div class="row no-gutters">
+                        <table class="table table-dark table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Cost</th>
+                                    <th scope="col">Color</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <div id="deckDetails">
+                        <h6 class="text-center">Deck Stats.</h6>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

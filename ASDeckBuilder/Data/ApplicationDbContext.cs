@@ -21,6 +21,8 @@ namespace ASDeckBuilder.Data
         public DbSet<Decks> Decks { get; set; }
         public DbSet<CardEffects> CardEffects { get; set; }
 
+        public DbSet<CardDecks> CardDecks { get; set; }
+
 
 
 
