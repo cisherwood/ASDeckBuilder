@@ -43,15 +43,16 @@ namespace ASDeckBuilder.Controllers
         {
 
 
-            HttpClient client = new HttpClient();
 
-            // get all cards from database
-            var cards = _context.Cards.ToList();
 
+            IList<Card> cards = _context.Cards.ToList();
 
             // Loop through all cards in database
             foreach (Card c in cards)
             {
+
+                HttpClient client = new HttpClient();
+
                 try
                 {
                     // Get card url
@@ -99,9 +100,11 @@ namespace ASDeckBuilder.Controllers
 
                                     // add category to database
                                     _context.Add(category);
+
+                                    await _context.SaveChangesAsync();
+
                                 }
 
-                                await _context.SaveChangesAsync();
 
                                 // Check if card category entry exists
                                 if (_context.CardCategories.Any(o => o.Categories.Name == nodeCategory && o.Card.Name == c.Name))
@@ -117,9 +120,11 @@ namespace ASDeckBuilder.Controllers
                                     // add card category to database
                                     _context.Add(cardCategory);
 
+                                    await _context.SaveChangesAsync();
+
+
                                 }
 
-                                await _context.SaveChangesAsync();
                             }
 
 
@@ -149,9 +154,11 @@ namespace ASDeckBuilder.Controllers
 
                                     // add tag to database
                                     _context.Add(tag);
+
+                                    await _context.SaveChangesAsync();
+
                                 }
 
-                                await _context.SaveChangesAsync();
 
                                 // Check if card tag entry exists
                                 if (_context.CardTags.Any(o => o.Tag.Name == nodeTag && o.Card.Name == c.Name))
@@ -167,65 +174,83 @@ namespace ASDeckBuilder.Controllers
                                     // add card category to database
                                     _context.Add(cardTag);
 
+                                    await _context.SaveChangesAsync();
+
+
                                 }
 
 
 
-                                // *** Card Effects ***
+                            }
 
-                                // Get card tag from argent saaga website
-                                var cardEffects = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[4]/div/div/span[2]/span[2]");
-                                // Select category text
-                                string effectNodes = cardTags[0].InnerText;
-                                // Remove whitespace
-                                string[] effectNodeList = tagNodes.Split(",").Select(x => x.Trim(charsToTrim)).ToArray();
+                            // *** Card Effects ***
 
-                                // Loop through all tags from agrent saga website for this card
-                                foreach (string effectNode in effectNodeList)
+                            // Get card tag from argent saaga website
+                            var cardEffects = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[1]/div");
+
+                            List<String> effectNodes = new List<String>();
+
+                            for (int i = 0; i < 3; i++)
+                            {
+
+
+                                try
                                 {
-                                    // Ensure tag exists
-                                    if (_context.Tags.Any(o => o.Name == nodeTag))
-                                    {
-                                        // if  tag already exists, do nothing
-                                    }
-                                    else
-                                    {
-                                        // Create tag entry
-                                        Tags tag = new Tags();
-                                        tag.Name = nodeTag;
+                                    effectNodes.Add(cardEffects[i].InnerText);
+                                }
+                                catch
+                                {
 
-                                        // add tag to database
-                                        _context.Add(tag);
-                                    }
+                                }
+                            }
 
-                                    await _context.SaveChangesAsync();
+
+                            foreach(string t in effectNodes)
+                            {
+                                if(t != null)
+                                {
 
                                     // Check if card tag entry exists
-                                    if (_context.CardTags.Any(o => o.Tag.Name == nodeTag && o.Card.Name == c.Name))
+                                    if (_context.CardEffects.Any(o => o.CardId == c.CardId && o.Text == t))
                                     {
                                         // Card tag entry exists, do nothing
                                     }
                                     else
                                     {
-                                        CardTags cardTag = new CardTags();
-                                        cardTag.CardId = c.CardId;
-                                        cardTag.TagId = _context.Tags.Where(x => x.Name == nodeTag).FirstOrDefault().TagId;
+                                        CardEffects cardEffect = new CardEffects();
+                                        cardEffect.CardId = c.CardId;
+                                        cardEffect.Text = t;
 
                                         // add card category to database
-                                        _context.Add(cardTag);
+                                        _context.Add(cardEffect);
+
+                                        await _context.SaveChangesAsync();
+
 
                                     }
 
-                                    await _context.SaveChangesAsync();
+
+                                }
+                                else
+                                {
+
                                 }
 
 
-                                // *** Card Image ***
-                                var cardImage = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[1]/div/div/div[2]/div/div/figure/div/a/img").FirstOrDefault();
-                                // Get card img link
-                                var src = cardImage.Attributes["src"].Value;
-                                // Create file location
-                                string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
+                            }
+
+
+
+
+                                
+
+
+                            // *** Card Image ***
+                            var cardImage = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[1]/div/div/div[2]/div/div/figure/div/a/img").FirstOrDefault();
+                            // Get card img link
+                            var src = cardImage.Attributes["src"].Value;
+                            // Create file location
+                            string downloadLocation = _hostingEnvironment.ContentRootPath + "/wwwroot/img/cards/" + c.CardId + ".jpg";
 
                          
                             // Check if file does not exist
@@ -248,9 +273,9 @@ namespace ASDeckBuilder.Controllers
 
                             }
                         }
-                    }
+                    
                 }
-                catch
+                catch(Exception e)
                 {
 
                 }
@@ -265,7 +290,7 @@ namespace ASDeckBuilder.Controllers
 
             return View();
 
-
+        
 
         }
 

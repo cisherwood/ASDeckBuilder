@@ -4,14 +4,16 @@ using ASDeckBuilder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ASDeckBuilder.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190907013331_cardEffectLengthUpdate")]
+    partial class cardEffectLengthUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +63,7 @@ namespace ASDeckBuilder.Data.Migrations
 
             modelBuilder.Entity("ASDeckBuilder.Data.CardEffects", b =>
                 {
-                    b.Property<int>("CardEffectsId")
+                    b.Property<int>("CardEffectId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -71,7 +73,7 @@ namespace ASDeckBuilder.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(1000);
 
-                    b.HasKey("CardEffectsId");
+                    b.HasKey("CardEffectId");
 
                     b.HasIndex("CardId");
 

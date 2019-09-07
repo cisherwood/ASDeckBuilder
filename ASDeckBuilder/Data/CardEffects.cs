@@ -9,13 +9,14 @@ namespace ASDeckBuilder.Data
     public class CardEffects
     {
         [Key]
-        public int CardEffectId { get; set; }
+        public int CardEffectsId { get; set; }
 
         [Required]
         public int CardId { get; set; }
 
 
         [Required]
+        [MaxLength(1000)]
         public string Text { get; set; }
 
 
