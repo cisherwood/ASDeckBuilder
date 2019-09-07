@@ -9,6 +9,12 @@
     overflow: scroll;
 }
 
+#decksBody {
+    padding: 0px;
+    max-height: 40em;
+    overflow: scroll;
+}
+
 #cardDetails{
     min-height: 100px;
 }
