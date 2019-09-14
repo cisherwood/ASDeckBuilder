@@ -119,10 +119,8 @@
 <script>
     $(document).ready(function () {
 
+
         $('.getCardDetails').click(function () {
-
-           
-
             var searchCardId = $(this).attr('data-card-search-card-id');
             var token = gettoken();
 
@@ -140,9 +138,40 @@
             }).done(function (data) {
                 $('#cardDetails').replaceWith(data);
             })
-
-
         })
+
+        $(document).on("click", ".deckModify", function () {
+
+            alert("test");
+
+            var deckModifyCardId = $(this).attr('data-deck-modify-card-id');
+            var deckModifyAmount = $(this).attr('data-deck-modify');
+            var token = gettoken();
+
+             var data = JSON.stringify({ 
+                 'cardId': deckModifyCardId,
+                 'modifyAmount': deckModifyAmount
+               });
+
+            $.ajax({
+                traditional: true,
+                type: "POST",
+                url: '/ModifyDeck/ModifyDeck', // <-- Where should this point?
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        String(token));
+                },
+                data: data,
+                dataType: "html"
+            }).done(function (data) {
+                $('#deckList').replaceWith(data);
+            })
+        });
+
+
+
+
     });
 
 

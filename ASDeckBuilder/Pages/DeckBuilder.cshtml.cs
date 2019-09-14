@@ -6,6 +6,7 @@ using ASDeckBuilder.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+
 namespace ASDeckBuilder.Pages
 {
     public class DeckBuilderModel : PageModel
@@ -45,6 +46,12 @@ namespace ASDeckBuilder.Pages
 
             return Page();
 
+        }
+
+        [HttpPost]
+        public IActionResult ModifyDeck()
+        {
+            return Page();
         }
 
         public string GetCardCost(int cardId)

@@ -21,11 +21,11 @@
     <div class="col col-12">
         <br />
         <div class="btn-group">
-            <button type="button" class="btn btn-secondary">
+            <button type="button" data-deck-modify="1" data-deck-modify-card-id="@Model.card.CardId" class="btn btn-secondary deckModify">
                 <i class="fas fa-minus"></i>
             </button>
-            <button type="button" class="btn btn-secondary">
-                <i class="fas fa-plus"></i>
+            <button type="button" data-deck-modify="-1" data-deck-modify-card-id="@Model.card.CardId" class="btn btn-secondary deckModify">
+                <i class="fas fa-plus" ></i>
             </button>
         </div>
     </div>
