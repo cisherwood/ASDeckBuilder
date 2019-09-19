@@ -22,7 +22,7 @@ namespace ASDeckBuilder.Pages
 
         public IActionResult OnGet()
         {
-            card = _context.Cards.FirstOrDefault();
+
 
             return Page();
         }
@@ -33,6 +33,7 @@ namespace ASDeckBuilder.Pages
             int cardId = Convert.ToInt32(id);
 
             card = _context.Cards.Where(x => x.CardId == cardId).FirstOrDefault();
+            card.CardEffects = _context.CardEffects.Where(x => x.CardId == card.CardId).ToList();
 
             return Page();
         }

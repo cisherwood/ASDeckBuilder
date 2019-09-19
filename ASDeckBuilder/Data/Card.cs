@@ -24,7 +24,9 @@ namespace ASDeckBuilder.Data
 
         public ICollection<CardCategories> CardCategories { get; set; }
         public ICollection<CardTags> CardTags { get; set; }
-        public ICollection<Decks> Decks { get; set; }
+        public ICollection<CardDecks> CardDecks { get; set; }
+        public ICollection<CardEffects> CardEffects { get; set; }
+
 
 
 

@@ -10,9 +10,12 @@ namespace ASDeckBuilder.Data
     {
         [Key]
         public int DeckId { get; set; }
-        public int CardId { get; set; }
-        public short Quantity { get; set; }
 
-        public Card Card { get; set; }
+        [MaxLength(500)]
+        public string Name { get; set; }
+
+
+        public ICollection<CardDecks> CardDecks { get; set; }
+
     }
 }

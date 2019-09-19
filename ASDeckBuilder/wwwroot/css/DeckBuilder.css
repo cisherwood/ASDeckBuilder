@@ -9,12 +9,18 @@
     overflow: scroll;
 }
 
+#decksBody {
+    padding: 0px;
+    max-height: 40em;
+    overflow: scroll;
+}
+
 #cardDetails{
     min-height: 100px;
 }
 
 .cardDetailsImage{
-    max-height: 15em;
+    max-height: 20em;
 }
 
 
@@ -31,4 +37,9 @@
 
 .icon-shard > img {
     max-height: 2em;
+    width: 80%;
+}
+
+.icon-shard{
+    padding: 0px;
 }

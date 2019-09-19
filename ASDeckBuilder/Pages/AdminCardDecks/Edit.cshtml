@@ -1,0 +1,43 @@
+﻿@page
+@model ASDeckBuilder.Pages.AdminCardDecks.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>CardDecks</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CardDecks.CardDeckId" />
+            <div class="form-group">
+                <label asp-for="CardDecks.CardId" class="control-label"></label>
+                <select asp-for="CardDecks.CardId" class="form-control" asp-items="ViewBag.CardId"></select>
+                <span asp-validation-for="CardDecks.CardId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardDecks.DeckId" class="control-label"></label>
+                <select asp-for="CardDecks.DeckId" class="form-control" asp-items="ViewBag.DeckId"></select>
+                <span asp-validation-for="CardDecks.DeckId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CardDecks.Quantity" class="control-label"></label>
+                <input asp-for="CardDecks.Quantity" class="form-control" />
+                <span asp-validation-for="CardDecks.Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+

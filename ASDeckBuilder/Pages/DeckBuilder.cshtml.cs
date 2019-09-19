@@ -6,6 +6,7 @@ using ASDeckBuilder.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+
 namespace ASDeckBuilder.Pages
 {
     public class DeckBuilderModel : PageModel
@@ -27,8 +28,10 @@ namespace ASDeckBuilder.Pages
         public ICollection<CardCategories> CardCategories { get; set; }
         public ICollection<CardTags> CardTags { get; set; }
         public ICollection<Decks> Decks { get; set; }
+        public ICollection<CardDecks> CardDecks { get; set; }
 
 
+        public Decks Deck { get; set; }
 
         public IActionResult OnGet()
         {
@@ -38,9 +41,17 @@ namespace ASDeckBuilder.Pages
             CardCategories = _context.CardCategories.ToList();
             CardTags = _context.CardTags.ToList();
             Decks = _context.Decks.ToList();
+            Deck = _context.Decks.FirstOrDefault();
+            CardDecks = _context.CardDecks.Where(x => x.DeckId == Deck.DeckId).ToList();
 
             return Page();
 
+        }
+
+        [HttpPost]
+        public IActionResult ModifyDeck()
+        {
+            return Page();
         }
 
         public string GetCardCost(int cardId)

@@ -6,8 +6,27 @@
 
 <div id ="cardDetails" class="row">
     <div class="col col-5">
-        <img class="cardDetailsImage" src="@("/img/cards/" + @Model.card.CardId + ".jpg")">
+        <img class="cardDetailsImage img-fluid" src="@("/img/cards/" + @Model.card.CardId + ".jpg")">
     </div>
-    <div class="col col-7">@Model.card.Name</div>
-</div>
+    <div class="col col-7">
+        <h5>
+            @Model.card.Name
+        </h5>
+        <p class="text-secondary text-left">
+            @Model.card.CardEffects.FirstOrDefault().Text
+
+        </p>
+    
+    </div>
+    <div class="col col-12">
+        <br />
+        <div class="btn-group">
+            <button type="button" data-deck-modify="1" data-deck-modify-card-id="@Model.card.CardId" class="btn btn-secondary deckModify">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" data-deck-modify="-1" data-deck-modify-card-id="@Model.card.CardId" class="btn btn-secondary deckModify">
+                <i class="fas fa-plus" ></i>
+            </button>
+        </div>
+    </div>
 

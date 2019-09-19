@@ -43,15 +43,16 @@ namespace ASDeckBuilder.Controllers
         {
 
 
-            HttpClient client = new HttpClient();
 
-            // get all cards from database
-            var cards = _context.Cards.ToList();
 
+            IList<Card> cards = _context.Cards.ToList();
 
             // Loop through all cards in database
             foreach (Card c in cards)
             {
+
+                HttpClient client = new HttpClient();
+
                 try
                 {
                     // Get card url
@@ -99,9 +100,11 @@ namespace ASDeckBuilder.Controllers
 
                                     // add category to database
                                     _context.Add(category);
+
+                                    await _context.SaveChangesAsync();
+
                                 }
 
-                                await _context.SaveChangesAsync();
 
                                 // Check if card category entry exists
                                 if (_context.CardCategories.Any(o => o.Categories.Name == nodeCategory && o.Card.Name == c.Name))
@@ -117,9 +120,11 @@ namespace ASDeckBuilder.Controllers
                                     // add card category to database
                                     _context.Add(cardCategory);
 
+                                    await _context.SaveChangesAsync();
+
+
                                 }
 
-                                await _context.SaveChangesAsync();
                             }
 
 
@@ -149,9 +154,11 @@ namespace ASDeckBuilder.Controllers
 
                                     // add tag to database
                                     _context.Add(tag);
+
+                                    await _context.SaveChangesAsync();
+
                                 }
 
-                                await _context.SaveChangesAsync();
 
                                 // Check if card tag entry exists
                                 if (_context.CardTags.Any(o => o.Tag.Name == nodeTag && o.Card.Name == c.Name))
@@ -167,10 +174,84 @@ namespace ASDeckBuilder.Controllers
                                     // add card category to database
                                     _context.Add(cardTag);
 
+                                    await _context.SaveChangesAsync();
+
+
                                 }
 
-                                await _context.SaveChangesAsync();
+
+
                             }
+
+                            // *** Card Effects ***
+
+                            // Get card tag from argent saaga website
+                            var cardEffects = document.DocumentNode.SelectNodes("/html/body/div[3]/div/div/section[2]/div/div/div[2]/div/div/div[1]/div");
+
+                            List<String> effectNodes = new List<String>();
+
+                            for (int i = 0; i < 3; i++)
+                            {
+
+
+                                try
+                                {
+                                    effectNodes.Add(cardEffects[i].InnerText);
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+
+
+                            foreach(string t in effectNodes)
+                            {
+                                if(t != null)
+                                {
+
+                                    // Check if card tag entry exists
+                                    if (_context.CardEffects.Any(o => o.CardId == c.CardId && o.Text == t))
+                                    {
+                                        // Card tag entry exists, do nothing
+                                    }
+                                    else
+                                    {
+                                        CardEffects cardEffect = new CardEffects();
+                                        cardEffect.CardId = c.CardId;
+                                        cardEffect.Text = t;
+
+                                        // add card category to database
+                                        _context.Add(cardEffect);
+                                        try
+                                        {
+                                            await _context.SaveChangesAsync();
+
+                                        }
+                                        catch
+                                        {
+                                            _context.Remove(cardEffect);
+
+                                        }
+
+
+
+                                    }
+
+
+                                }
+                                else
+                                {
+
+                                }
+
+
+                            }
+
+
+
+
+                                
 
 
                             // *** Card Image ***
@@ -196,15 +277,15 @@ namespace ASDeckBuilder.Controllers
 
 
 
-                            
 
 
+
+                            }
                         }
-                    }
+                    
                 }
-                catch
+                catch(Exception e)
                 {
-
                 }
                 
 
@@ -217,7 +298,7 @@ namespace ASDeckBuilder.Controllers
 
             return View();
 
-
+        
 
         }
 
@@ -233,10 +314,46 @@ namespace ASDeckBuilder.Controllers
                 HttpUtility.HtmlDecode(c.Name, stringWriter);
                 newName = stringWriter.ToString();
 
+
                 c.Name = newName;
                 _context.Update(c);
 
                 await _context.SaveChangesAsync();
+            }
+
+
+            return View();
+
+        }
+
+        public async Task<IActionResult> FixCardText()
+        {
+            IList<Card> cards = _context.Cards.ToList();
+
+
+            foreach (Card c in cards)
+            {
+                try
+                {
+                    StringWriter stringWriter = new StringWriter();
+                    string newText;
+
+                    CardEffects cardEffects = _context.CardEffects.Where(x => x.CardId == c.CardId).FirstOrDefault();
+
+                    HttpUtility.HtmlDecode(cardEffects.Text, stringWriter);
+                    newText = stringWriter.ToString();
+
+
+                    cardEffects.Text = newText;
+                    _context.Update(cardEffects);
+
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+
+                }
+
             }
 
 

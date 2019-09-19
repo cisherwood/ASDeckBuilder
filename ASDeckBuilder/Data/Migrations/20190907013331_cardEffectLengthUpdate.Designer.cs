@@ -4,14 +4,16 @@ using ASDeckBuilder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ASDeckBuilder.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190907013331_cardEffectLengthUpdate")]
+    partial class cardEffectLengthUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,30 +61,9 @@ namespace ASDeckBuilder.Data.Migrations
                     b.ToTable("CardCategories");
                 });
 
-            modelBuilder.Entity("ASDeckBuilder.Data.CardDecks", b =>
-                {
-                    b.Property<int>("CardDeckId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CardId");
-
-                    b.Property<int>("DeckId");
-
-                    b.Property<short>("Quantity");
-
-                    b.HasKey("CardDeckId");
-
-                    b.HasIndex("CardId");
-
-                    b.HasIndex("DeckId");
-
-                    b.ToTable("CardDecks");
-                });
-
             modelBuilder.Entity("ASDeckBuilder.Data.CardEffects", b =>
                 {
-                    b.Property<int>("CardEffectsId")
+                    b.Property<int>("CardEffectId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -92,7 +73,7 @@ namespace ASDeckBuilder.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(1000);
 
-                    b.HasKey("CardEffectsId");
+                    b.HasKey("CardEffectId");
 
                     b.HasIndex("CardId");
 
@@ -142,10 +123,13 @@ namespace ASDeckBuilder.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(500);
+                    b.Property<int>("CardId");
+
+                    b.Property<short>("Quantity");
 
                     b.HasKey("DeckId");
+
+                    b.HasIndex("CardId");
 
                     b.ToTable("Decks");
                 });
@@ -346,19 +330,6 @@ namespace ASDeckBuilder.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ASDeckBuilder.Data.CardDecks", b =>
-                {
-                    b.HasOne("ASDeckBuilder.Data.Card", "Card")
-                        .WithMany("CardDecks")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ASDeckBuilder.Data.Decks", "Decks")
-                        .WithMany("CardDecks")
-                        .HasForeignKey("DeckId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ASDeckBuilder.Data.CardEffects", b =>
                 {
                     b.HasOne("ASDeckBuilder.Data.Card", "Card")
@@ -377,6 +348,14 @@ namespace ASDeckBuilder.Data.Migrations
                     b.HasOne("ASDeckBuilder.Data.Tags", "Tag")
                         .WithMany("CardTags")
                         .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ASDeckBuilder.Data.Decks", b =>
+                {
+                    b.HasOne("ASDeckBuilder.Data.Card", "Card")
+                        .WithMany("Decks")
+                        .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -14,11 +14,34 @@
 
 </div>
 <div class="row">
-    <div class="col col-12 col-sm-12 col-md-8">
+    <div class="col col-12 col-sm-12 col-md-12 col-lg-8">
         <div id="cardSearch">
             <div class="card text-center">
                 <div class="card-header bg-dark">
-                    <h5 class="text-light">Card Filters</h5>
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-8 col-sm-8 col-md-6 col-lg-6 col-xl-5">
+                                <div class="btn-group flex-wrap" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-secondary icon-shard active"><img src="/img/icons/icon-shard-argent.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-light.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-air.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-water.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-fire.svg"></button>
+                                    <button type="button" class="btn btn-secondary icon-shard"><img src="~/img/icons/icon-shard-dark.svg"></button>
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm">
+                                <input class="form-control-sm" />
+                                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
                 </div>
                 <div id="cardsBody" class="card-body border-0">
                     <div class="row no-gutters">
@@ -59,9 +82,36 @@
 
         </div>
     </div>
-    <div class="col col-12 col-sm-12 col-md-4">
+    <div class="col col-12 col-sm-12 col-md-12 col-lg-4">
         <div id="deckList">
-                Deck list
+            <div class="card text-center">
+                <div class="card-header bg-dark btn-group flex-wrap">
+                    <button type="button" class="btn btn-secondary">Heros</button>
+                    <button type="button" class="btn btn-secondary">Deck</button>
+                    <button type="button" class="btn btn-secondary">Towers</button>
+                    <button type="button" class="btn btn-secondary">Shards</button>
+                </div>
+
+
+                    <div id="decksBody" class="border-0">
+                        <div class="row no-gutters">
+                            @foreach (var item in Model.CardDecks)
+                            {
+                                <div class="col col-4 col-sm-4 col-lg-3 getCardDetails" data-card-search-card-id="@item.CardId">
+                                    <img class="cardImage" src="@("/img/cards/" + item.CardId + ".jpg")" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+           
+                <div class="card-footer text-muted">
+                    <div id="deckDetails">
+                        <h6 class="text-center">Deck Stats.</h6>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -69,10 +119,8 @@
 <script>
     $(document).ready(function () {
 
+
         $('.getCardDetails').click(function () {
-
-           
-
             var searchCardId = $(this).attr('data-card-search-card-id');
             var token = gettoken();
 
@@ -90,9 +138,40 @@
             }).done(function (data) {
                 $('#cardDetails').replaceWith(data);
             })
-
-
         })
+
+        $(document).on("click", ".deckModify", function () {
+
+            alert("test");
+
+            var deckModifyCardId = $(this).attr('data-deck-modify-card-id');
+            var deckModifyAmount = $(this).attr('data-deck-modify');
+            var token = gettoken();
+
+             var data = JSON.stringify({ 
+                 'cardId': deckModifyCardId,
+                 'modifyAmount': deckModifyAmount
+               });
+
+            $.ajax({
+                traditional: true,
+                type: "POST",
+                url: '/ModifyDeck/ModifyDeck', // <-- Where should this point?
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        String(token));
+                },
+                data: data,
+                dataType: "html"
+            }).done(function (data) {
+                $('#deckList').replaceWith(data);
+            })
+        });
+
+
+
+
     });
 
 
