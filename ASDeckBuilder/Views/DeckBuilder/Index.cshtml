@@ -1,4 +1,6 @@
-﻿@{
+﻿@model  ASDeckBuilder.Models.DeckBuilderViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 @section CSS{
@@ -27,24 +29,25 @@
 </div>
 
 
+
+<div id="DeckBuilder">
+    {{ message }}
+</div>
+
+<!--  <script src="/js/DeckBuilder.js"></script>  -->
+
+
 <script>
-    $(document).ready(function () {
-        $.ajax({
-            type: "GET",
-            url: '/cardsearch', // <-- Where should this point?
-            contentType: "application/json; charset=utf-8",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
-            dataType: "html"
-        }).done(function (data) {
-            $('#cardSearch').replaceWith(data);
-        })
 
+
+
+    var deckList = {};
+
+    var app = new Vue({
+        el: '#DeckBuilder',
+        data: {
+            message: 'Hello Vues!'
+        }
     });
-
-
-
 
 </script>

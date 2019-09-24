@@ -2,17 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ASDeckBuilder.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ASDeckBuilder.Models;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASDeckBuilder.Controllers
 {
     public class DeckBuilderController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public DeckBuilderController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         // GET: DeckBuilder
         public ActionResult Index()
         {
-            return View();
+
+            DeckBuilderViewModel vm = new DeckBuilderViewModel();
+
+            Decks deck = _context.Decks.FirstOrDefault();
+            List<CardDecks> cardDecks = _context.CardDecks.Include(z=>z.Card).Where(x => x.DeckId == deck.DeckId).ToList();
+            List<Card> cards = cardDecks.Select(x => x.Card).ToList();
+            vm.DeckId = 1; // TODO
+
+
+            return View(vm);
         }
 
         // GET: DeckBuilder/Details/5
